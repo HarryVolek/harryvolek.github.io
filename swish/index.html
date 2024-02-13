@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SWISH</title>
+    <style>
+        html, body {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+        }
+        canvas {
+            display: block;
+            width: 100vw;
+            height: 100vh;
+            background-color: black;
+        }
+    </style>
+</head>
+<body>
+    <canvas id="myCanvas"></canvas>
+    <script>
+    document.addEventListener("DOMContentLoaded", function() {
+        var canvas = document.getElementById("myCanvas");
+        var ctx = canvas.getContext("2d");
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+        counter = 0;
+        colorIndex = 0;
+        const lines = [];
+        var x1 = Math.random();
+        var y1 = Math.random();
+        var x2 = Math.random();
+        var y2 = Math.random();
+
+        var xv1 = Math.random()/20;
+        var yv1 = Math.random()/20;
+        var xv2 = Math.random()/20;
+        var yv2 = Math.random()/20;
+
+        function drawLines() {
+            if (counter > 200) {
+                xv1 = Math.random()/20;
+                yv1 = Math.random()/20;
+                xv2 = Math.random()/20;
+                yv2 = Math.random()/20;
+                counter = 0;
+            }
+            if (counter % 20 == 0) {
+                colorIndex = (colorIndex + 1) % 7
+            }
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            [x1, xv1] = move(x1, xv1);
+            [x2, xv2] = move(x2, xv2);
+            [y1, yv1] = move(y1, yv1);
+            [y2, yv2] = move(y2, yv2);
+            var color = getColor(colorIndex);
+            lines[counter % 20] = {x1, y1, x2, y2, color};
+            for (var i = 0; i < lines.length; i++) {
+                ctx.strokeStyle = lines[i].color;
+                ctx.beginPath();
+                ctx.moveTo(lines[i].x1 * canvas.width, lines[i].y1 * canvas.height);
+                ctx.lineTo(lines[i].x2 * canvas.width, lines[i].y2 * canvas.height);
+                ctx.stroke();
+            }
+            counter++
+        }
+        setInterval(drawLines, 2);
+    });
+    function move(x, v) {
+        x = x + v;
+        if (x > 1) {
+            x = 2 - x;
+        } else if (x < 0) {
+            x = -x;
+        } else {
+            return [x, v];
+        }
+        v = -v;
+	    return [x, v];
+    }
+    function getColor(k) {
+        switch (k) {
+            case 0:
+                return 'blue';
+            case 1:
+                return 'lime';
+            case 2:
+                return 'cyan';
+            case 3:
+                return 'red';
+            case 4:
+                return 'fuchsia';
+            case 5:
+                return 'yellow';
+            case 6:
+                return 'white';
+        }
+    }
+    </script>
+</body>
+</html>
