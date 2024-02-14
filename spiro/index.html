@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SPIRO</title>
+    <style>
+        html, body {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+        }
+        canvas {
+            display: block;
+            width: 100vw;
+            height: 100vh;
+            background-color: black;
+        }
+    </style>
+</head>
+<body>
+    <canvas id="myCanvas"></canvas>
+    <script>
+    document.addEventListener("DOMContentLoaded", function() {
+        let canvas = document.getElementById("myCanvas");
+        let ctx = canvas.getContext("2d");
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+        let rr = [1,  1, 1, .6, .3,  0,  0,  0,  0,  0, .3, .6,  1,  1,  1].map(r => Math.trunc(r * 255));
+        let gg = [.3, .6, 1,  1,  1,  1,  1,  1, .6, .3,  0,  0,  0,  0,  0].map(g => Math.trunc(g * 255));
+        let bb = [0,  0, 0,  0,  0, .3, .6,  1,  1,  1,  1,  1,  1, .6, .3].map(b => Math.trunc(b * 255));
+        let baseX = canvas.width/2;
+        let baseY = canvas.height/2;
+        let a = 70;
+        let b = 19;
+        let incr1 = -21;
+        let incr2 = -20;
+        let col = 0;
+        let s1 = 1;
+        let s2 = -1;
+
+        function drawSpiro() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            let Xa = 64 * a;
+            let Ya = 0;
+            let Xb = 64 * b;
+            let Yb = 0;
+            let Vx = 0;
+            let Vy = 15000;
+            for (var i = 0; i < 300; i++) {
+                let y1 = baseY + Math.trunc((Xa + Xb + Vx) / 64);
+                let x1 = baseX + Math.trunc((Ya + Yb + Vy) / 64);
+                let y2 = baseY + Math.trunc((Xa + Xb - Vx) / 64);
+                let x2 = baseX + Math.trunc((Ya + Yb - Vy) / 64);
+                col = (col + 1) % 15;
+                ctx.strokeStyle = rgb(rr[col], gg[col], bb[col]);
+                ctx.beginPath();
+                ctx.moveTo(x1, y1);
+                ctx.lineTo(x2, y2);
+                ctx.stroke();
+
+                Xa = Xa - Math.trunc(Ya / incr2);
+                Ya = Math.trunc(Xa / incr2) + Ya;
+                Xb = Xb - Math.trunc(Yb / incr1);
+                Yb = Math.trunc(Xb / incr1) + Yb;
+                Vx = Vx - Math.trunc(Vy / incr1);
+                Vy = Math.trunc(Vx / incr1) + Vy;
+            }
+
+            incr1 = incr1+s1*Math.trunc(6*Math.random() + 1);
+            incr2 = incr2+s2*Math.trunc(3*Math.random());
+            if (incr1 == 0) {
+                incr1 = 1 * s1;
+            }
+            if (incr2 == 0) {
+                incr2 = 1 * s1;
+            }
+            if (Math.abs(incr1)>27) {
+                s1 = -Math.sign(incr1);
+            }
+            if (Math.abs(incr2)>27) {
+                s2 = -Math.sign(incr2);
+            }
+        };
+        setInterval(drawSpiro, 1000);
+    });
+    function rgb(r, g, b){
+        return "rgb("+r+" "+g+" "+b+")";
+    }
+    </script>
+</body>
+</html>
